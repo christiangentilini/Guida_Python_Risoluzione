@@ -1,0 +1,503 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Python e Git su Windows</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: manuale tecnico a colonna singola, indice laterale su schermi larghi, passi numerati perché sono davvero una sequenza */
+:root{
+  --bg:#f6f7f9; --paper:#ffffff; --ink:#18212b; --muted:#5a6675; --line:#dde2e8;
+  --accent:#1f5f8b; --accent-soft:#e4eef6;
+  --trap:#9a5b00; --trap-bg:#fff4e0; --ok:#2c6e3f; --ok-bg:#e6f4ea; --why-bg:#eef0f4;
+  --code-bg:#111a23; --code-fg:#e6edf3; --code-key:#ffd866;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", Consolas, "Courier New", monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f151c; --paper:#151d26; --ink:#e3e8ee; --muted:#9aa7b5; --line:#2a3644;
+  --accent:#7cb8e4; --accent-soft:#1b2c3b;
+  --trap:#f0b65a; --trap-bg:#2d2213; --ok:#7fd096; --ok-bg:#15291c; --why-bg:#1c2530;
+  --code-bg:#0a0f15; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0f151c; --paper:#151d26; --ink:#e3e8ee; --muted:#9aa7b5; --line:#2a3644;
+  --accent:#7cb8e4; --accent-soft:#1b2c3b;
+  --trap:#f0b65a; --trap-bg:#2d2213; --ok:#7fd096; --ok-bg:#15291c; --why-bg:#1c2530;
+  --code-bg:#0a0f15; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:0 64px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:250px minmax(0,1fr);gap:48px}
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)} nav.toc{position:static!important;max-height:none!important}}
+header.top{max-width:1180px;margin:0 auto;padding-block:48px 32px}
+header.top .eyebrow{font-family:var(--f-mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(34px,5vw,56px);line-height:1.05;margin:10px 0 14px;text-wrap:balance}
+.lead{font-size:19px;max-width:65ch;color:var(--muted);margin:0}
+.versions{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;padding:0;list-style:none}
+.versions li{font-family:var(--f-mono);font-size:13px;border:1px solid var(--line);border-radius:4px;padding:3px 8px;background:var(--paper)}
+nav.toc{position:sticky;top:env(safe-area-inset-top, 0px);align-self:start;max-height:100vh;overflow:auto;padding-block:16px;font-size:15px}
+nav.toc .label{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:2px;counter-reset:t}
+nav.toc a{display:block;color:var(--ink);text-decoration:none;padding:4px 8px;border-radius:4px}
+nav.toc a:hover,nav.toc a:focus-visible{background:var(--accent-soft);outline:none}
+nav.toc .n{font-family:var(--f-mono);color:var(--accent);margin-right:6px}
+main{min-width:0}
+section.step{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:28px clamp(18px,3vw,40px);margin-bottom:28px}
+section.step > h2{font-family:var(--f-display);font-weight:800;font-size:clamp(24px,3vw,32px);line-height:1.15;margin:0 0 6px;text-wrap:balance;display:flex;gap:14px;align-items:baseline}
+section.step > h2 .num{font-family:var(--f-mono);font-weight:600;font-size:.6em;color:var(--accent);border:2px solid var(--accent);border-radius:6px;padding:1px 8px;flex:none}
+.when{font-family:var(--f-mono);font-size:13px;color:var(--muted);margin:0 0 18px}
+h3{font-family:var(--f-display);font-weight:600;font-size:21px;margin:28px 0 8px;text-wrap:balance}
+p,li{max-width:70ch}
+ol.do{padding-left:1.4em;display:grid;gap:8px}
+ol.do > li::marker{font-family:var(--f-mono);color:var(--accent);font-weight:600}
+code{font-family:var(--f-mono);font-size:.88em;background:var(--accent-soft);padding:1px 5px;border-radius:3px;overflow-wrap:anywhere}
+kbd{font-family:var(--f-mono);font-size:.85em;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--paper)}
+.ui{font-weight:700}
+.cmd{position:relative;margin:12px 0 16px}
+.cmd pre{margin:0;background:var(--code-bg);color:var(--code-fg);font-family:var(--f-mono);font-size:14px;line-height:1.55;padding:14px 16px;padding-right:84px;border-radius:6px;overflow-x:auto;white-space:pre}
+.cmd .tag{position:absolute;top:-9px;left:12px;font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:var(--code-key);color:#1b1b1b;padding:0 6px;border-radius:3px}
+.cmd button{position:absolute;top:8px;right:8px;font:600 12px var(--f-mono);background:transparent;color:var(--code-fg);border:1px solid #4a5868;border-radius:4px;padding:4px 8px;cursor:pointer}
+.cmd button:focus-visible{outline:2px solid var(--code-key)}
+.box{border-radius:6px;padding:14px 18px;margin:16px 0;border-left:5px solid}
+.box > :first-child{margin-top:0}.box > :last-child{margin-bottom:0}
+.box .k{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;display:block;margin-bottom:4px}
+.trap{background:var(--trap-bg);border-color:var(--trap)} .trap .k{color:var(--trap)}
+.ok{background:var(--ok-bg);border-color:var(--ok)} .ok .k{color:var(--ok)}
+.why{background:var(--why-bg);border-color:var(--muted)} .why .k{color:var(--muted)}
+figure{margin:16px 0 20px}
+figure img{display:block;max-width:100%;height:auto;border:1px solid var(--line);border-radius:6px}
+figure.narrow img{max-width:min(100%,560px)}
+figcaption{font-size:14px;color:var(--muted);margin-top:6px;max-width:70ch}
+.tbl{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+td.set{font-weight:700;white-space:nowrap}
+.pill{display:inline-block;font-family:var(--f-mono);font-size:12px;border-radius:3px;padding:0 6px}
+.pill.keep{background:var(--ok-bg);color:var(--ok)} .pill.change{background:var(--trap-bg);color:var(--trap)}
+.errs dt{font-family:var(--f-mono);font-size:14px;font-weight:600;margin-top:14px;color:var(--ink)}
+.errs dd{margin:2px 0 0 0}
+a{color:var(--accent)}
+.note-small{font-size:14px;color:var(--muted)}
+@media print{
+  body{background:#fff;color:#000;font-size:11.5pt;padding:0}
+  :root{--paper:#fff;--bg:#fff}
+  nav.toc,.cmd button{display:none}
+  .wrap{display:block}
+  header.top{padding-block:0 12px}
+  section.step{border:none;border-top:2px solid #1f5f8b;border-radius:0;padding:14px 0 0;margin:0 0 22px}
+  section.step > h2, h3{break-after:avoid}
+  figure,.box,.cmd,table{break-inside:avoid}
+  .cmd pre{white-space:pre-wrap;overflow-wrap:anywhere;padding-right:16px}
+  a{color:#000;text-decoration:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="eyebrow">Corso Python · guida di installazione e lavoro</div>
+  <h1>Python, VS Code e Git su Windows, senza errori</h1>
+  <p class="lead">Segui i passi nell'ordine. Ogni schermata di questa guida è stata provata su un Windows pulito: se fai esattamente come c'è scritto, funziona. Le parti con il bordo arancione sono gli errori che capitano più spesso e come evitarli.</p>
+  <ul class="versions" aria-label="Versioni provate">
+    <li>Windows 11</li><li>Python 3.15.2</li><li>VS Code 1.145</li><li>Git 2.56</li><li>pipenv 2026.10</li><li>provata il 07/11/2026</li>
+  </ul>
+</header>
+
+<div class="wrap">
+<nav class="toc" aria-label="Indice">
+  <div class="label">Indice</div>
+  <ol>
+    <li><a href="#regole"><span class="n">00</span>Tre regole</a></li>
+    <li><a href="#pulizia"><span class="n">01</span>Pulizia</a></li>
+    <li><a href="#python"><span class="n">02</span>Python</a></li>
+    <li><a href="#unatantum"><span class="n">03</span>Impostazioni una tantum</a></li>
+    <li><a href="#vscode"><span class="n">04</span>VS Code</a></li>
+    <li><a href="#cartella"><span class="n">05</span>Cartella del corso</a></li>
+    <li><a href="#github"><span class="n">06</span>Account GitHub</a></li>
+    <li><a href="#git"><span class="n">07</span>Git</a></li>
+    <li><a href="#ambiente"><span class="n">08</span>Ambiente virtuale</a></li>
+    <li><a href="#pubblica"><span class="n">09</span>Salvare su GitHub</a></li>
+    <li><a href="#riusare"><span class="n">10</span>Riusare file vecchi</a></li>
+    <li><a href="#account"><span class="n">11</span>Cambiare account</a></li>
+    <li><a href="#errori"><span class="n">12</span>Indice degli errori</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<section class="step" id="regole">
+  <h2><span class="num">00</span>Tre regole da ricordare sempre</h2>
+  <p class="when">Leggile adesso, valgono per tutto il corso</p>
+  <ol class="do">
+    <li><strong>Guarda il prompt prima di ogni comando.</strong> La riga del terminale che finisce con <code>&gt;</code> ti dice dove sei. Deve finire con il nome della cartella della lezione, per esempio <code>PS C:\Users\nome\Desktop\Python_Pro\Lezione_01&gt;</code>. Se sei nella cartella sbagliata, i comandi fanno danni nella cartella sbagliata.</li>
+    <li><strong>Dopo aver installato qualcosa, chiudi e riapri.</strong> I terminali e VS Code già aperti non vedono i programmi appena installati. Chiudi tutto e riapri: risolve metà dei "comando non riconosciuto".</li>
+    <li><strong>Leggi la finestra prima di cliccare.</strong> Molte finestre hanno già selezionata l'opzione sbagliata. In questa guida trovi la scelta giusta per ognuna.</li>
+  </ol>
+</section>
+
+<section class="step" id="pulizia">
+  <h2><span class="num">01</span>Pulizia: se hai già provato a installare</h2>
+  <p class="when">Salta questo passo solo se sul PC non hai mai installato Python</p>
+  <p>Python installato due volte, in due modi diversi, è la causa più comune dei problemi. Prima di installarlo di nuovo, togliamo tutto.</p>
+
+  <h3>Controlla cosa c'è</h3>
+  <ol class="do">
+    <li>Apri <span class="ui">Start</span>, scrivi <span class="ui">PowerShell</span> e premi <kbd>Invio</kbd>.</li>
+    <li>Lancia questi comandi, uno alla volta:</li>
+  </ol>
+  <div class="cmd"><span class="tag">PowerShell</span><pre>python --version
+py list
+where.exe python</pre></div>
+  <p>Se tutti danno errore o rispondono <em>"Python non è stato trovato; eseguire senza argomenti da installare dal Microsoft Store…"</em>, Python non c'è. Vai al passo 02.</p>
+  <figure><img src="img/win-python-store.jpg" alt="PowerShell: py non riconosciuto e messaggio Python non è stato trovato del Microsoft Store" loading="lazy"><figcaption>Questo è lo stato di un Windows senza Python. Quel <code>python</code> che rimanda allo Store è un "finto Python" che Windows ha di serie. A volte la <em>è</em> appare come <em>Þ</em>: è solo un problema di visualizzazione.</figcaption></figure>
+
+  <h3>Disinstalla</h3>
+  <ol class="do">
+    <li>Se <code>py list</code> ha mostrato qualcosa, togli prima i Python gestiti da lì:
+      <div class="cmd"><span class="tag">PowerShell</span><pre>py uninstall --purge</pre></div>
+      Se chiede conferma, rispondi <code>y</code>.</li>
+    <li>Apri <span class="ui">Impostazioni → App → App installate</span> (su Windows 10: <span class="ui">Impostazioni → App → App e funzionalità</span>), cerca <code>python</code> e disinstalla <strong>tutto</strong> quello che compare: <em>Python 3.x</em>, <em>Python Install Manager</em>, <em>Python Launcher</em>.</li>
+  </ol>
+  <figure><img src="img/win-app-installate.jpg" alt="App installate con Python 3.15.2 e Python Install Manager" loading="lazy"><figcaption>Un caso tipico: sono installati sia Python sia Python Install Manager. Vanno via entrambi.</figcaption></figure>
+
+  <h3>Cancella i residui</h3>
+  <p>Disinstallare non basta: restano cartelle che confondono la prossima installazione. Chiudi PowerShell, riaprilo e incolla:</p>
+  <div class="cmd"><span class="tag">PowerShell</span><pre>Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$env:LOCALAPPDATA\Python", "$env:LOCALAPPDATA\Programs\Python", "$env:LOCALAPPDATA\pip", "$env:USERPROFILE\.virtualenvs"</pre></div>
+  <div class="box why"><span class="k">Se reinstalli anche VS Code</span>
+    <p>Disinstallando VS Code restano le sue impostazioni ed estensioni. Per ripartire da zero, dopo averlo disinstallato cancella anche quelle:</p>
+    <div class="cmd"><span class="tag">PowerShell</span><pre>Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$env:APPDATA\Code", "$env:USERPROFILE\.vscode"</pre></div>
+  </div>
+  <div class="box ok"><span class="k">Controllo</span>Chiudi e riapri PowerShell. <code>py list</code> deve dire <em>"non riconosciuto"</em> e <code>python --version</code> deve mostrare il messaggio del Microsoft Store. Allora sei pulito.</div>
+</section>
+
+<section class="step" id="python">
+  <h2><span class="num">02</span>Installare Python</h2>
+  <p class="when">Circa 5 minuti</p>
+  <ol class="do">
+    <li>Vai su <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org/downloads</a>.</li>
+    <li><strong>Non</strong> cliccare il grande pulsante giallo. Clicca il link piccolo nella riga sotto: <em>"Or get the standalone installer for <u>Python 3.15.x</u>"</em>.</li>
+  </ol>
+  <figure class="narrow"><img src="img/pyorg-download.jpg" alt="Pagina di download di python.org con il pulsante Download Python install manager e il link standalone installer" loading="lazy"><figcaption>Il pulsante giallo scarica il <em>Python install manager</em>, un installer diverso da quello usato nel corso. Usa il link "Python 3.15.x" nella riga sotto.</figcaption></figure>
+  <ol class="do" start="3">
+    <li>Parte il download di <code>python-3.15.x-amd64.exe</code>. Aprilo.</li>
+    <li><strong>Spunta "Add python.exe to PATH"</strong>, in basso. Lascia vuota l'altra casella.</li>
+    <li>Clicca <span class="ui">Install Now</span>. Alla fine, se compare il pulsante <span class="ui">Disable path length limit</span>, cliccalo. Poi <span class="ui">Close</span>.</li>
+  </ol>
+  <figure class="narrow"><img src="img/py-installer.jpg" alt="Installer di Python 3.15.2 con le caselle Use admin privileges e Add python.exe to PATH" loading="lazy"><figcaption>Tutte e due le caselle in basso partono vuote. Senza "Add python.exe to PATH" Python si installa, ma il comando <code>python</code> non funziona.</figcaption></figure>
+  <div class="box trap"><span class="k">Trappola</span>La nota "This installer is being retired" è normale: questo tipo di installer esiste fino alla versione 3.15. Per il corso va benissimo.</div>
+
+  <h3>Verifica</h3>
+  <p><strong>Chiudi tutte le finestre di PowerShell</strong> e aprine una nuova, poi:</p>
+  <div class="cmd"><span class="tag">PowerShell</span><pre>python --version
+where.exe python
+pip --version</pre></div>
+  <figure><img src="img/py-verifica.jpg" alt="Verifica in PowerShell: Python 3.15.2, where python con Python315 al primo posto, pip 26.2.2" loading="lazy"><figcaption>Il primo risultato di <code>where.exe python</code> deve essere la cartella <code>...\Programs\Python\Python315</code>. Se il primo è <code>WindowsApps</code>, la casella PATH non era spuntata: torna al passo 01.</figcaption></figure>
+</section>
+
+<section class="step" id="unatantum">
+  <h2><span class="num">03</span>Impostazioni da fare una volta sola</h2>
+  <p class="when">2 minuti, valgono per sempre su questo PC</p>
+  <p>Nello stesso PowerShell lancia questi tre comandi, uno alla volta.</p>
+
+  <h3>1. Permetti gli script degli ambienti virtuali</h3>
+  <div class="cmd"><span class="tag">PowerShell</span><pre>Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned</pre></div>
+  <div class="box why"><span class="k">Perché</span>Di serie Windows blocca tutti gli script di PowerShell, compreso quello che attiva l'ambiente virtuale. Senza questa impostazione compare l'errore <em>"L'esecuzione di script è disabilitata nel sistema in uso"</em>. <code>RemoteSigned</code> permette gli script creati sul tuo PC e continua a bloccare quelli scaricati non firmati. È l'impostazione consigliata da Microsoft per chi programma, e vale solo per il tuo utente.</div>
+  <figure><img src="img/policy-errore.jpg" alt="Errore rosso di PowerShell: L'esecuzione di script è disabilitata nel sistema in uso" loading="lazy"><figcaption>L'errore che eviti con il comando qui sopra.</figcaption></figure>
+
+  <h3>2. Fai creare gli ambienti dentro la cartella della lezione</h3>
+  <div class="cmd"><span class="tag">PowerShell</span><pre>[Environment]::SetEnvironmentVariable("PIPENV_VENV_IN_PROJECT", "1", "User")</pre></div>
+  <div class="box why"><span class="k">Perché</span>Di serie pipenv mette ogni ambiente in una cartella nascosta, con nomi tipo <code>M3L1-a1B2c3D4</code>. Dopo qualche lezione VS Code ti mostra una lista di interpreti tutti uguali e non sai quale scegliere. Con questa impostazione l'ambiente finisce in una cartella <code>.venv</code> dentro la lezione, e VS Code lo trova subito.</div>
+
+  <h3>3. Installa pipenv</h3>
+  <div class="cmd"><span class="tag">PowerShell</span><pre>pip install pipenv</pre></div>
+  <p>Deve finire con <em>"Successfully installed … pipenv-…"</em>. La riga <em>"[notice] A new release of pip is available"</em> non è un errore: ignorala.</p>
+  <div class="box ok"><span class="k">Controllo</span>Chiudi PowerShell, riaprilo e lancia <code>pipenv --version</code>: deve rispondere con un numero di versione.</div>
+</section>
+
+<section class="step" id="vscode">
+  <h2><span class="num">04</span>Installare VS Code</h2>
+  <p class="when">Prima di Git: l'ordine conta</p>
+  <ol class="do">
+    <li>Vai su <a href="https://code.visualstudio.com/" target="_blank" rel="noopener">code.visualstudio.com</a> e scarica la versione per Windows. Il file si chiama <code>VSCodeUserSetup-x64-….exe</code>.</li>
+    <li>Accetta la licenza e lascia la cartella proposta.</li>
+    <li>Nella schermata <span class="ui">Selezione processi aggiuntivi</span> spunta <strong>tutte</strong> le caselle.</li>
+  </ol>
+  <figure class="narrow"><img src="img/vsc-attivita.jpg" alt="Installazione di VS Code, selezione processi aggiuntivi" loading="lazy"><figcaption>Le due voci <em>"Apri con Code"</em> sono importanti: ti permettono di aprire una cartella con il tasto destro, come vedrai al passo 05.</figcaption></figure>
+  <ol class="do" start="4">
+    <li>Nella schermata <span class="ui">GitHub Copilot CLI</span>, in inglese, scegli <strong>"Don't add the copilot command"</strong>. Non serve per il corso.</li>
+  </ol>
+  <figure class="narrow"><img src="img/vsc-copilot.jpg" alt="Schermata GitHub Copilot CLI dell'installer di VS Code" loading="lazy"><figcaption>È preselezionata la prima opzione, che scarica 112 MB inutili. Scegli la terza.</figcaption></figure>
+  <ol class="do" start="5">
+    <li>Finisci l'installazione e apri VS Code. Se a destra c'è il pannello <span class="ui">Chat</span>, chiudilo con la <span class="ui">×</span>.</li>
+  </ol>
+
+  <h3>VS Code in italiano</h3>
+  <p>Premi <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>, scrivi <code>Configure Display Language</code>, scegli <span class="ui">Italiano (Italian)</span> e poi <span class="ui">Restart</span>. Il resto della guida usa i nomi italiani dei menu.</p>
+
+  <h3>Estensione Python</h3>
+  <p>Premi <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>, cerca <code>Python</code> e installa quella di <strong>Microsoft</strong>, con la spunta blu. Insieme arrivano anche <em>Python Debugger</em> e <em>Python Environments</em>.</p>
+  <figure class="narrow"><img src="img/vsc-estensioni.jpg" alt="Lista estensioni Python nel Marketplace di VS Code" loading="lazy"><figcaption>Installa solo le estensioni con autore <em>Microsoft</em> e spunta blu. Le altre con l'icona simile sono imitazioni o versioni abbandonate.</figcaption></figure>
+</section>
+
+<section class="step" id="cartella">
+  <h2><span class="num">05</span>La cartella del corso</h2>
+  <p class="when">Una volta, all'inizio del corso</p>
+  <ol class="do">
+    <li>Crea sul Desktop una cartella <code>Python_Pro</code>. Usa nomi senza spazi e senza lettere accentate, per questa e per tutte le cartelle dentro.</li>
+    <li>Apri la cartella e clicca nella barra dell'indirizzo di Esplora file. Se il percorso contiene <code>OneDrive</code>, crea la cartella da un'altra parte, per esempio direttamente in <code>C:\Users\tuonome\</code>. OneDrive sincronizza i file mentre lavori e può bloccarli o duplicarli.</li>
+    <li>Dentro <code>Python_Pro</code> crea una cartella per la lezione, per esempio <code>Lezione_01</code>.</li>
+    <li>Fai <strong>tasto destro sulla cartella <code>Lezione_01</code> → Apri con Code</strong>. Su Windows 11, se non lo vedi, è sotto <span class="ui">Mostra altre opzioni</span>.</li>
+  </ol>
+
+  <h3>Fiducia nella cartella, una volta sola</h3>
+  <p>La prima volta VS Code chiede se ti fidi degli autori della cartella. Se rispondi "No" si apre in <strong>Modalità con restrizioni</strong>, e l'estensione Python smette di funzionare.</p>
+  <figure><img src="img/vsc-restrizioni.jpg" alt="Fascia della Modalità con restrizioni in VS Code" loading="lazy"><figcaption>Se vedi questa fascia, clicca <span class="ui">Gestisci</span>.</figcaption></figure>
+  <ol class="do">
+    <li>Clicca <span class="ui">Gestisci</span>, poi <span class="ui">Aggiungi cartella</span> e scegli <strong><code>Python_Pro</code></strong>, la cartella madre.</li>
+    <li>Da quel momento tutte le cartelle delle lezioni dentro <code>Python_Pro</code> sono già fidate e VS Code non chiede più niente.</li>
+  </ol>
+  <figure><img src="img/vsc-attendibile.jpg" alt="Pagina Attendibilità dell'area di lavoro con Python_Pro tra le cartelle attendibili" loading="lazy"><figcaption>In fondo alla pagina, sotto "Cartelle e aree di lavoro attendibili", deve comparire <code>Python_Pro</code>.</figcaption></figure>
+
+  <div class="box ok"><span class="k">Regola di lavoro pulito</span>
+    <ul>
+      <li>Una cartella per ogni lezione, dentro <code>Python_Pro</code>.</li>
+      <li>A ogni lezione apri in VS Code <strong>solo</strong> la cartella di quella lezione, mai <code>Python_Pro</code> intera.</li>
+      <li>Non tenere aperti i file delle lezioni precedenti. Se ti serve qualcosa di vecchio, copialo come spiegato al passo 10.</li>
+    </ul>
+  </div>
+  <p>Aprendo la cartella, anche il terminale di VS Code (<span class="ui">Terminale → Nuovo terminale</span>) parte già lì dentro. Il terminale di Windows, aperto da Start, parte invece da <code>C:\Users\tuonome</code>.</p>
+</section>
+
+<section class="step" id="github">
+  <h2><span class="num">06</span>Account GitHub ed email privata</h2>
+  <p class="when">Prima di installare Git</p>
+  <ol class="do">
+    <li>Accedi a <a href="https://github.com" target="_blank" rel="noopener">github.com</a>. Se non hai un account, crealo.</li>
+    <li>Vai su <a href="https://github.com/settings/emails" target="_blank" rel="noopener">github.com/settings/emails</a>.</li>
+    <li>Attiva <strong>"Keep my email addresses private"</strong> e <strong>"Block command line pushes that expose my email"</strong>.</li>
+    <li>Nella descrizione della prima opzione c'è un indirizzo del tipo <code>12345678+tuonome@users.noreply.github.com</code>. <strong>Copialo</strong>: ti serve al passo 07.</li>
+  </ol>
+  <div class="box why"><span class="k">Perché</span>I tuoi repository saranno pubblici, e ogni salvataggio (commit) riporta un'email visibile a tutti. L'indirizzo <em>noreply</em> è anonimo, ma GitHub lo riconosce come tuo.</div>
+  <div class="box trap"><span class="k">Trappola</span>Se ti sei registrato con <em>"Continue with Google"</em> o con Apple, il tuo account <strong>non ha una password</strong>. Scrivendo email e password compare <em>"This account does not support password sign-in"</em>. Entra sempre nello stesso modo in cui ti sei registrato, anche quando sarà VS Code ad aprirti il browser.</div>
+</section>
+
+<section class="step" id="git">
+  <h2><span class="num">07</span>Installare e configurare Git</h2>
+  <p class="when">Circa 5 minuti. Le schermate sono in inglese</p>
+  <ol class="do">
+    <li>Vai su <a href="https://git-scm.com/install/windows" target="_blank" rel="noopener">git-scm.com/install/windows</a> e scarica <span class="ui">Git for Windows/x64 Setup</span>. Non scegliere le versioni "Portable".</li>
+    <li>Avvialo e segui la tabella. Tutte le schermate che non compaiono qui: lascia com'è e clicca <span class="ui">Next</span>.</li>
+  </ol>
+  <div class="tbl"><table>
+    <thead><tr><th>Schermata</th><th>Scelta</th><th></th></tr></thead>
+    <tbody>
+      <tr><td>Select Components</td><td>Lascia tutto com'è</td><td><span class="pill keep">default</span></td></tr>
+      <tr><td>Choosing the default editor used by Git</td><td class="set">Use Visual Studio Code as Git's default editor</td><td><span class="pill change">cambia</span></td></tr>
+      <tr><td>Adjusting the name of the initial branch</td><td class="set">Override… → <code>main</code></td><td><span class="pill change">cambia</span></td></tr>
+      <tr><td>Adjusting your PATH environment</td><td>Git from the command line and also from 3rd-party software</td><td><span class="pill keep">default</span></td></tr>
+      <tr><td>Choosing HTTPS transport backend</td><td>Use the native Windows Secure Channel library</td><td><span class="pill keep">default</span></td></tr>
+      <tr><td>Choose a credential helper</td><td>Git Credential Manager</td><td><span class="pill keep">default</span></td></tr>
+      <tr><td>Configuring experimental options</td><td>Nessuna spunta</td><td><span class="pill keep">default</span></td></tr>
+    </tbody>
+  </table></div>
+  <figure class="narrow"><img src="img/git-editor.jpg" alt="Installer di Git, scelta dell'editor: Visual Studio Code" loading="lazy"><figcaption>Il default è Vim, un editor da cui non si sa nemmeno come uscire. Scegli <em>Visual Studio Code</em>, <strong>non</strong> <em>Visual Studio Code Insiders</em>.</figcaption></figure>
+  <figure class="narrow"><img src="img/git-main.jpg" alt="Installer di Git, nome del ramo iniziale impostato a main" loading="lazy"><figcaption>GitHub chiama il ramo principale <code>main</code>. Se Git lo chiama <code>master</code>, prima o poi i due non si capiscono.</figcaption></figure>
+
+  <h3>Firma i tuoi commit</h3>
+  <ol class="do">
+    <li><strong>Chiudi VS Code del tutto</strong> e riaprilo con tasto destro sulla cartella della lezione → Apri con Code. Così si accorge che Git è installato.</li>
+    <li>Apri il terminale (<span class="ui">Terminale → Nuovo terminale</span>) e scrivi, con il tuo nome e l'indirizzo noreply copiato al passo 06:</li>
+  </ol>
+  <div class="cmd"><span class="tag">Terminale VS Code</span><pre>git config --global user.name "Nome Cognome"
+git config --global user.email "12345678+tuonome@users.noreply.github.com"
+git config --global --list</pre></div>
+  <p>L'ultimo comando deve mostrare le righe <code>user.name=…</code> e <code>user.email=…</code>.</p>
+  <div class="box trap"><span class="k">Trappola</span>Molti video saltano questo passo perché chi li registra l'ha fatto anni fa. Senza questi due comandi, al primo commit VS Code dice <em>"Assicurarsi di configurare user.name e user.email in GIT"</em>. Il login a GitHub <strong>non</strong> risolve questo errore: <code>git config</code> è la firma sulla lettera, il login è la chiave della cassetta postale.</div>
+  <figure><img src="img/git-errore-nome.jpg" alt="Errore di VS Code: Assicurarsi di configurare user.name e user.email in GIT" loading="lazy"><figcaption>L'errore che eviti con <code>git config</code>.</figcaption></figure>
+  <div class="box why"><span class="k">Il triangolino giallo</span>Se accanto alla scheda del terminale compare un <strong>⚠</strong>, passaci sopra col mouse e clicca <span class="ui">Riavvia il terminale</span>. Sono le estensioni che vogliono attivarsi.</div>
+</section>
+
+<section class="step" id="ambiente">
+  <h2><span class="num">08</span>L'ambiente virtuale di ogni lezione</h2>
+  <p class="when">A ogni lezione nuova, nella cartella della lezione</p>
+  <p>Ogni lezione ha il suo ambiente: una copia di Python con le sue librerie, separata dalle altre. Questi sono i 5 passi del corso, con le note su cosa vedrai davvero.</p>
+
+  <h3>I 5 passi del corso</h3>
+  <ol class="do">
+    <li><strong>Cartella e <code>main.py</code>.</strong> Crea la cartella della lezione dentro <code>Python_Pro</code>, aprila con <em>Apri con Code</em> e crea un file <code>main.py</code> vuoto.</li>
+    <li><strong><code>pip install pipenv</code>.</strong> L'hai già fatto al passo 03: si fa una volta sola, non a ogni lezione.</li>
+    <li><strong><code>pipenv shell</code>.</strong> Nel terminale di VS Code, controlla prima che il prompt finisca con il nome della lezione.</li>
+  </ol>
+  <div class="cmd"><span class="tag">Terminale VS Code</span><pre>pipenv shell</pre></div>
+  <figure><img src="img/pipenv-shell-cmd.jpg" alt="Output di pipenv shell: Launching subshell e prompt del Prompt dei comandi senza PS" loading="lazy"><figcaption>Compaiono il <code>Pipfile</code> e la cartella <code>.venv</code>. Poi pipenv apre il vecchio <strong>Prompt dei comandi</strong> (la scritta "Microsoft Windows [Versione…]"): il prompt non inizia più con <code>PS</code> e <strong>non</strong> mostra il nome del progetto tra parentesi. È normale, l'ambiente è attivo lo stesso. Per uscire scrivi <code>exit</code>.</figcaption></figure>
+  <ol class="do" start="4">
+    <li><strong>Seleziona l'interprete.</strong> Apri <code>main.py</code>, premi <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>, scrivi <code>Selezionare interprete</code> e scegli la voce <strong><code>.venv</code></strong>, quella il cui percorso finisce con il nome della tua lezione.</li>
+  </ol>
+  <figure><img src="img/interprete-dopo.jpg" alt="Lista Selezionare un ambiente Python con .venv nella cartella della lezione" loading="lazy"><figcaption>Scegli <code>.venv</code>, con etichetta <em>Pipenv</em>. Non scegliere <em>Globale</em> e non cliccare <em>"Crea l'ambiente virtuale…"</em>: creerebbe un secondo ambiente che pipenv non conosce.</figcaption></figure>
+  <div class="box trap"><span class="k">Se .venv non è nella lista</span>VS Code non si accorge degli ambienti creati mentre è aperto. Premi <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> → <code>Ricarica finestra</code>, poi riprova. Se ancora non c'è: <span class="ui">Immettere il percorso dell'interprete…</span> → scrivi <code>.venv\Scripts\python.exe</code> → <kbd>Invio</kbd>.</div>
+  <p>Controlla la <strong>barra di stato</strong> in basso a destra: deve dire <code>.venv (3.15.x)</code>. Se non vedi nessun interprete, è perché il file aperto non è un <code>.py</code>: clicca su <code>main.py</code>.</p>
+  <ol class="do" start="5">
+    <li><strong>Installa le librerie con pipenv</strong>, non con pip:</li>
+  </ol>
+  <div class="cmd"><span class="tag">Terminale VS Code</span><pre>pipenv install flask</pre></div>
+  <p>Deve dire <em>"Installation Succeeded"</em>. Nel <code>Pipfile</code> compare la riga <code>flask = "*"</code> e nasce un nuovo file, <code>Pipfile.lock</code>.</p>
+  <figure><img src="img/pipfile-flask.jpg" alt="Pipfile con flask nella sezione packages" loading="lazy"><figcaption><code>Pipfile</code>: l'elenco delle librerie del progetto. L'asterisco vuol dire "qualsiasi versione".</figcaption></figure>
+  <div class="box why"><span class="k">Pipfile e Pipfile.lock</span><code>Pipfile.lock</code> è la "ricevuta" con le versioni esatte di tutto quello che è stato installato, anche delle librerie che servono a Flask. Non si modifica a mano. Tieni sempre i due file insieme: su un altro PC basta <code>pipenv install</code> per ricostruire tutto.</div>
+
+  <h3>La scorciatoia</h3>
+  <p>Grazie all'impostazione del passo 03, il passo 3 (<code>pipenv shell</code>) si può saltare: <code>pipenv install flask</code> in una cartella nuova crea da solo <code>Pipfile</code>, <code>.venv</code> e installa Flask. Quindi a ogni lezione bastano:</p>
+  <ol class="do">
+    <li>cartella nuova → <em>Apri con Code</em> → <code>main.py</code>;</li>
+    <li><code>pipenv install flask</code> (o le librerie della lezione);</li>
+    <li><code>Ricarica finestra</code> → <code>Selezionare interprete</code> → <code>.venv</code>.</li>
+  </ol>
+  <p>Da lì in poi VS Code attiva l'ambiente da solo in ogni terminale nuovo, e il prompt mostra il nome della lezione tra parentesi, per esempio <code>(Lezione_01) PS C:\…&gt;</code>.</p>
+
+  <h3>Prova che funzioni</h3>
+  <p>Scrivi in <code>main.py</code> (se copi il codice, controlla che la prima riga parta dal margine sinistro):</p>
+  <div class="cmd"><span class="tag">main.py</span><pre>from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Funziona!"
+
+app.run(debug=True)</pre></div>
+  <p>Premi <span class="ui">▶</span> in alto a destra. Nel terminale deve comparire <em>"Running on http://127.0.0.1:5000"</em>. Aprilo nel browser: vedrai <strong>Funziona!</strong>. Per fermare il server, clicca nel terminale e premi <kbd>Ctrl</kbd>+<kbd>C</kbd>.</p>
+  <figure><img src="img/flask-avvio.jpg" alt="Terminale con Flask avviato su http://127.0.0.1:5000" loading="lazy"><figcaption>Il <em>WARNING: This is a development server</em> è normale: Flask avvisa che questo server è solo per provare, non per un sito vero.</figcaption></figure>
+</section>
+
+<section class="step" id="pubblica">
+  <h2><span class="num">09</span>Salvare la lezione su GitHub</h2>
+  <p class="when">Alla fine di ogni lezione</p>
+  <ol class="do">
+    <li>Clicca l'icona <span class="ui">Controllo del codice sorgente</span> a sinistra (la terza) → <span class="ui">Inizializza repository</span>.</li>
+    <li>Controlla l'elenco delle <span class="ui">Modifiche</span>: ci sono i tuoi file, e <code>.venv</code> <strong>non</strong> c'è. È giusto, Git lo ignora da solo.</li>
+  </ol>
+  <figure class="narrow"><img src="img/git-modifiche-venv.jpg" alt="Modifiche: main.py, Pipfile, Pipfile.lock, settings.json, senza .venv" loading="lazy"><figcaption>Quattro file: <code>main.py</code>, <code>Pipfile</code>, <code>Pipfile.lock</code> e <code>.vscode/settings.json</code>. Va tutto su GitHub.</figcaption></figure>
+  <ol class="do" start="3">
+    <li>Scrivi un messaggio, per esempio <code>prima versione</code>, e clicca <span class="ui">Commit</span>. Se chiede <em>"Preparare tutte le modifiche ed eseguirne il commit direttamente?"</em>, clicca <span class="ui">Sempre</span>.</li>
+    <li>Clicca <span class="ui">Pubblica Branch</span>.</li>
+    <li>La prima volta compare <em>"L'estensione 'GitHub' vuole eseguire l'accesso con GitHub"</em>: clicca <span class="ui">Consenti</span>.</li>
+  </ol>
+  <figure class="narrow"><img src="img/gh-consenti.jpg" alt="Finestra: L'estensione GitHub vuole eseguire l'accesso con GitHub" loading="lazy"></figure>
+  <ol class="do" start="6">
+    <li>Nel browser, alla pagina <em>"Authorize Visual Studio Code"</em>, <strong>leggi il nome accanto a "Signed in as"</strong>. Se è il tuo account, clicca <span class="ui">Continue</span>. Se è quello di qualcun altro, clicca <span class="ui">Use a different account</span>.</li>
+    <li>Se il browser chiede <em>"Aprire Visual Studio Code?"</em>, clicca <span class="ui">Apri</span>.</li>
+  </ol>
+  <figure class="narrow"><img src="img/gh-authorize-vscode.jpg" alt="Pagina Authorize Visual Studio Code con Signed in as" loading="lazy"><figcaption>Se qui c'è l'account di un fratello o un account vecchio, il repository finisce lì.</figcaption></figure>
+  <ol class="do" start="8">
+    <li>In VS Code, in alto, il nome del repository è già scritto (è il nome della cartella, e puoi cambiarlo). Sotto, scegli <strong>"Publish to GitHub public repository"</strong>.</li>
+  </ol>
+  <figure><img src="img/gh-pubblica-scelta.jpg" alt="Scelta tra repository privato e pubblico in VS Code" loading="lazy"><figcaption>È evidenziata l'opzione <em>private</em>: chi preme <kbd>Invio</kbd> di fretta crea un repository privato, che il prof non può vedere.</figcaption></figure>
+  <ol class="do" start="9">
+    <li><strong>Solo la prima volta</strong> compare una seconda finestra, <em>"Connect to GitHub"</em>. È Git che chiede il permesso di caricare i file. Clicca <span class="ui">Sign in with your browser</span>, nel browser controlla l'account e clicca <span class="ui">Authorize git-ecosystem</span>. Quando vedi <em>"Authentication Succeeded"</em>, torna tu a VS Code.</li>
+  </ol>
+  <figure class="narrow"><img src="img/gcm-connect.jpg" alt="Finestra Connect to GitHub di Git Credential Manager" loading="lazy"><figcaption><strong>Non chiudere questa finestra.</strong> A questo punto il repository su GitHub esiste già ma è vuoto: se la chiudi, i file non arrivano.</figcaption></figure>
+  <div class="box ok"><span class="k">Fatto</span>In basso a destra compare <em>"Il repository tuonome/Lezione_01 è stato pubblicato in GitHub"</em>. Clicca <span class="ui">Apri in GitHub</span> per vederlo. Se chiede di eseguire periodicamente "git fetch", rispondi <span class="ui">Sì</span>.</div>
+  <h3>Le volte successive</h3>
+  <p>Modifichi i file → messaggio → <span class="ui">Commit</span> → <span class="ui">Sincronizza modifiche</span>. La prima volta chiede una conferma su "pull e push": clicca <span class="ui">OK, non visualizzare più</span>.</p>
+</section>
+
+<section class="step" id="riusare">
+  <h2><span class="num">10</span>Riusare file di una lezione precedente</h2>
+  <p class="when">Leggilo prima di copiare qualsiasi cartella</p>
+  <p>Ogni cartella pubblicata su GitHub contiene una cartella <strong>nascosta</strong>, <code>.git</code>. È la "memoria" del progetto: tutti i commit e l'indirizzo del repository su GitHub. Se copi la cartella intera di una lezione, copi anche la sua memoria. La copia crede di essere la lezione vecchia: VS Code non propone più "Pubblica", e i tuoi salvataggi finiscono nel repository vecchio o vengono rifiutati.</p>
+  <h3>Il modo giusto</h3>
+  <ol class="do">
+    <li>Crea la cartella della lezione nuova, <strong>vuota</strong>.</li>
+    <li>Entra nella cartella vecchia, seleziona <strong>solo i file</strong> che ti servono (non la cartella) e copiali dentro quella nuova.</li>
+  </ol>
+  <h3>Se hai già copiato la cartella intera</h3>
+  <p>Apri la copia in VS Code e, con il prompt che finisce con il nome della copia, lancia:</p>
+  <div class="cmd"><span class="tag">Terminale VS Code</span><pre>git remote -v
+Remove-Item -Recurse -Force .git</pre></div>
+  <figure><img src="img/git-copia-remote.jpg" alt="git remote -v che mostra il repository della lezione vecchia" loading="lazy"><figcaption><code>git remote -v</code> mostra a quale repository è collegata la cartella. In una cartella nuova non deve stampare niente. Dopo il secondo comando torna il pulsante "Inizializza repository".</figcaption></figure>
+  <p class="note-small">In alternativa: Esplora file → <span class="ui">Visualizza → Mostra → Elementi nascosti</span>, poi elimina la cartella <code>.git</code>.</p>
+  <h3>Clonare un repository</h3>
+  <p>Se il prof ti chiede di scaricare un repository (<span class="ui">Clona repository GIT…</span>), come cartella di destinazione scegli <code>Python_Pro</code>: Git crea da solo la sottocartella. Non creare prima una cartella con lo stesso nome, o ti ritrovi una cartella dentro l'altra.</p>
+</section>
+
+<section class="step" id="account">
+  <h2><span class="num">11</span>Controllare o cambiare account GitHub</h2>
+  <p class="when">Se compare il messaggio del fork o il push viene rifiutato</p>
+  <p>Il tuo account GitHub è registrato in tre posti, e devono essere tutti uguali:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Dove</th><th>A cosa serve</th><th>Come lo vedi</th></tr></thead>
+    <tbody>
+      <tr><td>VS Code</td><td>Creare il repository ("Pubblica")</td><td>Icona in basso a sinistra</td></tr>
+      <tr><td>Git Credential Manager</td><td>Caricare i file (push)</td><td><code>git credential-manager github list</code></td></tr>
+      <tr><td>Browser</td><td>Decide quale account usano gli altri due</td><td>Avatar in alto a destra su github.com</td></tr>
+    </tbody>
+  </table></div>
+  <p>Anche il nome dopo <code>github.com/</code> in <code>git remote -v</code> deve essere il tuo.</p>
+  <h3>Per cambiare account</h3>
+  <ol class="do">
+    <li><strong>Browser:</strong> su github.com esci (avatar → <span class="ui">Sign out</span>) e rientra con l'account giusto. Va fatto per primo: il browser ricollega gli altri due <strong>in silenzio</strong> con l'account che trova.</li>
+    <li><strong>Git:</strong> <code>git credential-manager github logout NOME-SBAGLIATO</code></li>
+    <li><strong>VS Code:</strong> icona in basso a sinistra → account → <span class="ui">Esci</span>.</li>
+  </ol>
+  <p>Non serve ricollegarsi a mano. Al prossimo "Pubblica" o "Sincronizza" VS Code e Git chiedono di nuovo l'accesso con le finestre del passo 09. Non usare la voce <em>"Accedere per usare GitHub Copilot"</em>.</p>
+</section>
+
+<section class="step" id="errori">
+  <h2><span class="num">12</span>Indice degli errori</h2>
+  <p class="when">Cerca il messaggio che vedi</p>
+  <dl class="errs">
+    <dt>Python non è stato trovato; eseguire senza argomenti da installare dal Microsoft Store</dt>
+    <dd>Python non è installato, oppure manca la spunta "Add python.exe to PATH". Rifai i passi <a href="#pulizia">01</a> e <a href="#python">02</a>.</dd>
+    <dt>'pip' / 'pipenv' non riconosciuto come nome di cmdlet</dt>
+    <dd>Hai il terminale aperto da prima dell'installazione: chiudilo e riaprilo. Se continua, usa <code>python -m pip install pipenv</code> e <code>python -m pipenv …</code>, poi controlla il passo <a href="#python">02</a>.</dd>
+    <dt>L'esecuzione di script è disabilitata nel sistema in uso</dt>
+    <dd>Manca l'impostazione 1 del passo <a href="#unatantum">03</a>.</dd>
+    <dt>Modalità con restrizioni / VS Code non trova Python</dt>
+    <dd>Rendi attendibile <code>Python_Pro</code> (passo <a href="#cartella">05</a>).</dd>
+    <dt>ModuleNotFoundError: No module named 'flask'</dt>
+    <dd>VS Code sta usando il Python globale. Seleziona l'interprete <code>.venv</code> (passo <a href="#ambiente">08</a>, punto 4).</dd>
+    <dt>Select Python Interpreter (giallo) / .venv non compare nella lista</dt>
+    <dd><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> → <code>Ricarica finestra</code>, poi seleziona <code>.venv</code>.</dd>
+    <dt>IndentationError: unexpected indent (sulla prima riga)</dt>
+    <dd>Il codice copiato ha spazi all'inizio. Seleziona tutto (<kbd>Ctrl</kbd>+<kbd>A</kbd>) e premi <kbd>Shift</kbd>+<kbd>Tab</kbd> finché la prima riga parte dal margine.</dd>
+    <dt>You are attempting to remove a virtualenv that Pipenv did not create</dt>
+    <dd>Hai lanciato pipenv con l'ambiente già attivo. Scrivi <code>deactivate</code> e riprova.</dd>
+    <dt>Il prompt mostra &gt;&gt; invece di PS C:\…&gt;</dt>
+    <dd>Il comando è stato incollato spezzato o manca una virgoletta. Premi <kbd>Ctrl</kbd>+<kbd>C</kbd> e riscrivilo.</dd>
+    <dt>Assicurarsi di configurare "user.name" e "user.email" in GIT</dt>
+    <dd>Fai i comandi <code>git config</code> del passo <a href="#git">07</a>.</dd>
+    <dt>GitHub repository already exists</dt>
+    <dd>Esiste già un repository con quel nome, magari un tentativo fallito. Cambia nome nel campo in alto, oppure cancella quello vecchio su GitHub (repository → Settings → Delete this repository).</dd>
+    <dt>Non si dispone delle autorizzazioni… Creare invece un fork?</dt>
+    <dd>Clicca <span class="ui">Annulla</span>, mai "Crea fork". La cartella è collegata al repository di qualcun altro (passo <a href="#riusare">10</a>) oppure stai usando l'account sbagliato (passo <a href="#account">11</a>).</dd>
+    <dt>GH007: Your push would publish a private email address</dt>
+    <dd>Hai configurato la tua email vera. Rifai <code>git config --global user.email</code> con l'indirizzo noreply (passo <a href="#github">06</a>).</dd>
+    <dt>SSL certificate problem: unable to get local issuer certificate</dt>
+    <dd>Di solito è l'antivirus che controlla le connessioni. Reinstalla Git lasciando "native Windows Secure Channel library" (passo <a href="#git">07</a>).</dd>
+    <dt>This account does not support password sign-in</dt>
+    <dd>Ti sei registrato con Google o Apple: usa "Continue with Google" (passo <a href="#github">06</a>).</dd>
+    <dt>Si apre una schermata nera con delle tilde (~) e non riesci a scrivere</dt>
+    <dd>È Vim. Premi <kbd>Esc</kbd>, scrivi <code>:q!</code> e premi <kbd>Invio</kbd>. Poi reinstalla Git scegliendo VS Code come editor.</dd>
+    <dt>[notice] A new release of pip is available · WARNING: This is a development server</dt>
+    <dd>Non sono errori. Ignorali.</dd>
+  </dl>
+</section>
+
+</main>
+</div>
+
+<script>
+document.querySelectorAll('.cmd').forEach(function(box){
+  var pre = box.querySelector('pre'); if(!pre) return;
+  var b = document.createElement('button'); b.type='button'; b.textContent='Copia';
+  b.setAttribute('aria-label','Copia il comando');
+  b.addEventListener('click', function(){
+    var t = pre.innerText;
+    var done = function(){ b.textContent='Copiato'; setTimeout(function(){ b.textContent='Copia'; },1500); };
+    var fallback = function(){ var r=document.createRange(); r.selectNodeContents(pre); var s=getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent='Selezionato'; };
+    try { navigator.clipboard.writeText(t).then(done, fallback); } catch(e){ fallback(); }
+  });
+  box.appendChild(b);
+});
+</script>
+
+</body></html>
